@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>My Best Memory!</title>
+  <title>About Me!</title>
   
   <link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -70,18 +70,39 @@
   <script type="text/babel">
     const { useState, useEffect, useCallback, useRef } = React;
 
-    // 学校行事の辞書（クイズの選択肢を確保するため10個に調整しています）
-    const MEMORY_DIC = {
-      '入学式': 'entrance ceremony',
-      '学芸会': 'drama festival',
-      '遠足': 'field trip',
-      '音楽会': 'music festival',
-      '修学旅行': 'school trip',
-      '運動会': 'sports day',
-      '水泳記録会': 'swimming meet',
-      'ボランティア活動': 'volunteer day',
-      '卒業式': 'graduation ceremony',
-      '文化祭': 'school festival'
+    const ACTION_DIC = {
+      '上手に歌う': 'sing well',
+      '速く泳ぐ': 'swim fast',
+      'なわとびをする': 'jump rope',
+      '速く走る': 'run fast',
+      '料理する': 'cook',
+      'サッカーをする': 'play soccer',
+      '野球をする': 'play baseball',
+      '柔道をする': 'do judo',
+      'けん玉をする': 'play kendama',
+      '将棋をする': 'play shogi',
+      'ピアノを弾く': 'play the piano',
+      'リコーダーを吹く': 'play the recorder',
+      '剣道をする': 'do kendo',
+      '折り鶴を作る': 'make paper cranes',
+      '指を鳴らす': 'snap my fingers',
+      '踊る': 'dance',
+      'テレビゲームをする': 'play video games',
+      'バドミントンをする': 'play badminton',
+      '歌う': 'sing'
+    };
+
+    const SUBJECT_DIC = {
+      '国語': 'Japanese',
+      '算数': 'math',
+      '理科': 'science',
+      '社会': 'social studies',
+      '音楽': 'music',
+      '図工': 'arts and crafts',
+      '家庭科': 'home economics',
+      '体育': 'P.E.',
+      '英語': 'English',
+      '道徳': 'moral education'
     };
 
     const KUMMANI_STAGES = {
@@ -104,7 +125,7 @@
       17: { id: 17, name: "熊覇天炎華(シォンバーティエンイェンホワ)", emoji: "💥", reqExp: 40, next: [] },
       18: { id: 18, name: "熊極煉獄(シォンジーリェンユー)", emoji: "🌋", reqExp: 40, next: [] },
       19: { id: 19, name: "熊零度氷月(シォンリンドゥビンユエ)", emoji: "🧊", reqExp: 40, next: [] },
-      20: { id: 20, name: "熊白雪絶影(シォンバイシュエジュエイン)", emoji: "🌨️️", reqExp: 40, next: [] },
+      20: { id: 20, name: "熊白雪絶影(シォンバイシュエジュエイン)", emoji: "🌨️", reqExp: 40, next: [] },
       21: { id: 21, name: "熊暴風覇王(シォンバオフォンバーワン)", emoji: "🌀", reqExp: 40, next: [] },
       22: { id: 22, name: "熊神風天狗(シォンシェンフォンティエンゴウ)", emoji: "👺", reqExp: 40, next: [] },
       23: { id: 23, name: "熊大地震神(シォンダーディーヂェンシェン)", emoji: "⛰️", reqExp: 40, next: [] },
@@ -333,27 +354,59 @@
         }
       };
 
-      const handleBtn = (key, isDown) => { stateRef.current.keys[key] = isDown; };
+      const handleBtn = (key, isDown) => {
+        stateRef.current.keys[key] = isDown;
+      };
 
       return (
-        <div className="flex flex-col items-center bg-gray-900 p-4 rounded-3xl border-4 border-gray-700 shadow-2xl touch-none">
+        <div className="flex flex-col items-center bg-gray-900 p-4 rounded-3xl border-4 border-gray-700 shadow-2xl" style={{ touchAction: 'none' }}>
           <div className="flex justify-between w-full mb-4 px-2">
             <div className="text-xl font-bold text-white bg-gray-800 px-4 py-1 rounded-full border-2 border-gray-600">⏳ {timeLeft}</div>
             <div className="text-xl font-bold text-yellow-400 bg-gray-800 px-4 py-1 rounded-full border-2 border-gray-600">🪙 {stateRef.current.score}</div>
           </div>
-          <div className="bg-gray-800 rounded-xl overflow-hidden shadow-inner">
+          <div className="bg-gray-800 rounded-xl overflow-hidden shadow-inner touch-none relative">
             <canvas ref={canvasRef} width={stateRef.current.width} height={stateRef.current.height} />
           </div>
           
-          <div className="grid grid-cols-3 gap-2 mt-4 md:hidden w-full max-w-[250px]">
+          <div className="grid grid-cols-3 gap-2 mt-4 md:hidden w-full max-w-[250px] touch-none">
             <div />
-            <button onPointerDown={() => handleBtn('ArrowUp', true)} onPointerUp={() => handleBtn('ArrowUp', false)} onPointerLeave={() => handleBtn('ArrowUp', false)} className="bg-gray-700 text-white p-4 rounded-xl text-2xl active:bg-teal-600 flex items-center justify-center">⬆️</button>
+            <button
+                onTouchStart={(e) => { e.preventDefault(); handleBtn('ArrowUp', true); }}
+                onTouchEnd={(e) => { e.preventDefault(); handleBtn('ArrowUp', false); }}
+                onPointerDown={(e) => { e.preventDefault(); handleBtn('ArrowUp', true); }}
+                onPointerUp={(e) => { e.preventDefault(); handleBtn('ArrowUp', false); }}
+                onPointerLeave={(e) => { e.preventDefault(); handleBtn('ArrowUp', false); }}
+                className="bg-gray-700 text-white p-4 rounded-xl text-2xl active:bg-teal-600 flex items-center justify-center select-none"
+            >⬆️</button>
             <div />
-            <button onPointerDown={() => handleBtn('ArrowLeft', true)} onPointerUp={() => handleBtn('ArrowLeft', false)} onPointerLeave={() => handleBtn('ArrowLeft', false)} className="bg-gray-700 text-white p-4 rounded-xl text-2xl active:bg-teal-600 flex items-center justify-center">⬅️</button>
-            <button onPointerDown={() => handleBtn('ArrowDown', true)} onPointerUp={() => handleBtn('ArrowDown', false)} onPointerLeave={() => handleBtn('ArrowDown', false)} className="bg-gray-700 text-white p-4 rounded-xl text-2xl active:bg-teal-600 flex items-center justify-center">⬇️</button>
-            <button onPointerDown={() => handleBtn('ArrowRight', true)} onPointerUp={() => handleBtn('ArrowRight', false)} onPointerLeave={() => handleBtn('ArrowRight', false)} className="bg-gray-700 text-white p-4 rounded-xl text-2xl active:bg-teal-600 flex items-center justify-center">➡️</button>
+            <button
+                onTouchStart={(e) => { e.preventDefault(); handleBtn('ArrowLeft', true); }}
+                onTouchEnd={(e) => { e.preventDefault(); handleBtn('ArrowLeft', false); }}
+                onPointerDown={(e) => { e.preventDefault(); handleBtn('ArrowLeft', true); }}
+                onPointerUp={(e) => { e.preventDefault(); handleBtn('ArrowLeft', false); }}
+                onPointerLeave={(e) => { e.preventDefault(); handleBtn('ArrowLeft', false); }}
+                className="bg-gray-700 text-white p-4 rounded-xl text-2xl active:bg-teal-600 flex items-center justify-center select-none"
+            >⬅️</button>
+            <button
+                onTouchStart={(e) => { e.preventDefault(); handleBtn('ArrowDown', true); }}
+                onTouchEnd={(e) => { e.preventDefault(); handleBtn('ArrowDown', false); }}
+                onPointerDown={(e) => { e.preventDefault(); handleBtn('ArrowDown', true); }}
+                onPointerUp={(e) => { e.preventDefault(); handleBtn('ArrowDown', false); }}
+                onPointerLeave={(e) => { e.preventDefault(); handleBtn('ArrowDown', false); }}
+                className="bg-gray-700 text-white p-4 rounded-xl text-2xl active:bg-teal-600 flex items-center justify-center select-none"
+            >⬇️</button>
+            <button
+                onTouchStart={(e) => { e.preventDefault(); handleBtn('ArrowRight', true); }}
+                onTouchEnd={(e) => { e.preventDefault(); handleBtn('ArrowRight', false); }}
+                onPointerDown={(e) => { e.preventDefault(); handleBtn('ArrowRight', true); }}
+                onPointerUp={(e) => { e.preventDefault(); handleBtn('ArrowRight', false); }}
+                onPointerLeave={(e) => { e.preventDefault(); handleBtn('ArrowRight', false); }}
+                className="bg-gray-700 text-white p-4 rounded-xl text-2xl active:bg-teal-600 flex items-center justify-center select-none"
+            >➡️️</button>
           </div>
-          <p className="text-gray-400 mt-4 text-sm text-center font-bold">やじるしキー（または ボタン）で うごかして コインを あつめよう！<br/>なかま が エイリアンを やっつけてくれるよ！</p>
+          <p className="text-gray-400 mt-4 text-sm text-center font-bold select-none">
+            やじるしキー（または ボタン）で うごかして コインを あつめよう！<br/>なかま が エイリアンを やっつけてくれるよ！
+          </p>
         </div>
       );
     };
@@ -369,7 +422,9 @@
       const [cookedDishes, setCookedDishes] = useState([]);
       
       const [inputs, setInputs] = useState([
-        { type: 'memory', label: '一番の思い出', prefix: 'My best memory is ', suffix: '.', action: '', example: '運動会' }
+        { type: 'can', label: 'できること', prefix: 'I can ', suffix: '.', action: '', example: '速く走る' },
+        { type: 'like', label: '好きな事', prefix: 'I like ', suffix: '.', action: '', example: 'math' },
+        { type: 'cant', label: 'できないこと', prefix: "I can't ", suffix: '.', action: '', example: '上手に歌う' }
       ]);
       const [answers, setAnswers] = useState(null);
       const [translatingState, setTranslatingState] = useState({});
@@ -411,6 +466,7 @@
         const storedDishesStr = localStorage.getItem('myBestMemoryDishes_V1');
         if (storedDishesStr) {
           const arr = JSON.parse(storedDishesStr);
+          // 互換性のため文字列のまま保存し、表示時にルビを結合する方針
           setCookedDishes(arr.map(d => typeof d === 'string' ? d : d.name));
         }
       }, []);
@@ -502,8 +558,11 @@
 
         try {
           let rawEn = "";
-          if (MEMORY_DIC[jpAction]) {
-             rawEn = MEMORY_DIC[jpAction];
+          if (ACTION_DIC[jpAction]) {
+             rawEn = ACTION_DIC[jpAction];
+             await new Promise(r => setTimeout(r, 800));
+          } else if (SUBJECT_DIC[jpAction]) {
+             rawEn = SUBJECT_DIC[jpAction];
              await new Promise(r => setTimeout(r, 800));
           } else {
              rawEn = await translateWithGAS(jpAction);
@@ -656,21 +715,20 @@
       };
 
       const initQuiz = () => {
-        const ALL_WORDS = Object.keys(MEMORY_DIC).map(jp => ({ jp, en: MEMORY_DIC[jp] }));
+        const ALL_WORDS = [
+          ...Object.keys(ACTION_DIC).map(jp => ({ jp, en: ACTION_DIC[jp] })),
+          ...Object.keys(SUBJECT_DIC).map(jp => ({ jp, en: SUBJECT_DIC[jp] }))
+        ];
         const shuffled = [...ALL_WORDS].sort(() => 0.5 - Math.random());
-        // 利用可能な単語数に応じて最大10問を選択
-        const maxQuestions = Math.min(10, shuffled.length);
-        const selected = shuffled.slice(0, maxQuestions);
+        const selected = shuffled.slice(0, 10);
         
         const questions = selected.map((q, index) => {
-          if (index < Math.floor(maxQuestions / 2)) {
-            // 選択肢クイズ
-            const others = ALL_WORDS.filter(w => w.en !== q.en).sort(() => 0.5 - Math.random()).slice(0, 3);
-            const options = [q, ...others].sort(() => 0.5 - Math.random());
+          const others = ALL_WORDS.filter(w => w.en !== q.en).sort(() => 0.5 - Math.random()).slice(0, 3);
+          const options = [q, ...others].sort(() => 0.5 - Math.random());
+          if (index < 5) {
             return { ...q, type: 'choice', options };
           } else {
-            // 発音クイズ
-            return { ...q, type: 'voice' };
+            return { ...q, type: 'voice', options };
           }
         });
         setQuizList(questions);
@@ -686,7 +744,7 @@
         const currentQ = quizList[currentQuizIndex];
         speak(currentQ.en);
         setTimeout(() => {
-          if (currentQuizIndex < quizList.length - 1) {
+          if (currentQuizIndex < 9) {
             setCurrentQuizIndex(idx => idx + 1);
             setQuizStatus('question');
             setFeedbackMsg("");
@@ -702,7 +760,7 @@
         const currentQ = quizList[currentQuizIndex];
         speak(currentQ.en);
         setTimeout(() => {
-          if (currentQuizIndex < quizList.length - 1) {
+          if (currentQuizIndex < 9) {
             setCurrentQuizIndex(idx => idx + 1);
             setQuizStatus('question');
             setFeedbackMsg("");
@@ -772,56 +830,46 @@
         </button>
       );
 
-      // ノートのレンダリング。QとAの2行になるよう調整しています。
       const renderNoteLines = (ansData, isTeacherScreen = false) => {
-        if (!ansData || ansData.length === 0 || !ansData[0]) return null;
-        const ans = ansData[0];
-        
+        if (!ansData || ansData.length === 0) return null;
         return (
           <div className="text-left w-full overflow-x-auto pb-4 custom-scrollbar">
-            {/* 1行目: 質問 */}
-            <div className={`mb-10 min-w-max ${isTeacherScreen ? 'border-b-2 border-gray-300 pb-6' : ''}`}>
-              <div className={`text-gray-500 text-sm font-bold mb-1 inline-block px-2 rounded-t-lg relative z-10 ${isTeacherScreen ? '' : 'bg-white/80'}`}>質問</div>
-              <div className={`${isTeacherScreen ? 'bg-gray-100 p-4 rounded-xl border border-gray-200' : 'four-lines-bg rounded-b-lg border-2 border-gray-200 shadow-sm'} flex min-w-max`}>
-                <span className={`font-note font-bold flex items-baseline flex-nowrap gap-2 ${isTeacherScreen ? 'text-2xl py-2' : 'px-4'}`}>
-                  <span className="text-gray-800 shrink-0">What is your best memory?</span>
-                </span>
-              </div>
-            </div>
-
-            {/* 2行目: 答え */}
-            <div className={`mb-10 min-w-max ${isTeacherScreen ? 'border-b-2 border-gray-300 pb-6' : ''}`}>
-              <div className={`text-gray-500 text-sm font-bold mb-1 inline-block px-2 rounded-t-lg relative z-10 ${isTeacherScreen ? '' : 'bg-white/80'}`}>答え: {ans.action}</div>
-              
-              {isTeacherScreen && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 mt-2">
-                  <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm relative">
-                    <span className="absolute -top-3 left-3 bg-white px-1 text-xs font-bold text-gray-500">児童の入力 (日本語)</span>
-                    <span className="font-bold text-gray-800 break-words">{ans.action}</span>
-                  </div>
-                  <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm relative">
-                    <span className="absolute -top-3 left-3 bg-white px-1 text-xs font-bold text-gray-500">翻訳システムの出力</span>
-                    <span className="font-mono text-gray-800 break-words">{ans.rawEn || ans.en}</span>
+            {ansData.map((ans, i) => {
+              return (
+                <div key={i} className={`mb-10 min-w-max ${isTeacherScreen ? 'border-b-2 border-gray-300 pb-6' : ''}`}>
+                  <div className={`text-gray-500 text-sm font-bold mb-1 inline-block px-2 rounded-t-lg relative z-10 ${isTeacherScreen ? '' : 'bg-white/80'}`}>({i+1}つ目: {ans.label} / {ans.action})</div>
+                  
+                  {isTeacherScreen && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4 mt-2">
+                      <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm relative">
+                        <span className="absolute -top-3 left-3 bg-white px-1 text-xs font-bold text-gray-500">児童の入力 (日本語)</span>
+                        <span className="font-bold text-gray-800 break-words">{ans.action}</span>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm relative">
+                        <span className="absolute -top-3 left-3 bg-white px-1 text-xs font-bold text-gray-500">翻訳システムの出力</span>
+                        <span className="font-mono text-gray-800 break-words">{ans.rawEn || ans.en}</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className={`${isTeacherScreen ? 'bg-gray-100 p-4 rounded-xl border border-gray-200' : 'four-lines-bg rounded-b-lg border-2 border-gray-200 shadow-sm'} flex min-w-max`}>
+                    <span className={`font-note font-bold flex items-baseline flex-nowrap gap-2 ${isTeacherScreen ? 'text-2xl py-2' : 'px-4'}`}>
+                      <span className="text-gray-800 shrink-0">{ans.prefix}</span>
+                      {isTeacherScreen ? (
+                        <input type="text" value={ans.en} onChange={e => {
+                            const newAnswers = [...answers];
+                            newAnswers[i].en = e.target.value;
+                            setAnswers(newAnswers);
+                        }} className="border-b-2 border-teal-400 focus:outline-none focus:bg-teal-50 px-2 pb-0 text-teal-700 bg-transparent min-w-[200px] leading-none m-0 font-note" />
+                      ) : (
+                        <span className="text-teal-700">{ans.en}</span>
+                      )}
+                      <span className="text-gray-800 shrink-0 pr-4">{ans.suffix}</span>
+                    </span>
                   </div>
                 </div>
-              )}
-              
-              <div className={`${isTeacherScreen ? 'bg-gray-100 p-4 rounded-xl border border-gray-200' : 'four-lines-bg rounded-b-lg border-2 border-gray-200 shadow-sm'} flex min-w-max`}>
-                <span className={`font-note font-bold flex items-baseline flex-nowrap gap-2 ${isTeacherScreen ? 'text-2xl py-2' : 'px-4'}`}>
-                  <span className="text-gray-800 shrink-0">{ans.prefix}</span>
-                  {isTeacherScreen ? (
-                    <input type="text" value={ans.en} onChange={e => {
-                        const newAnswers = [...answers];
-                        newAnswers[0].en = e.target.value;
-                        setAnswers(newAnswers);
-                    }} className="border-b-2 border-teal-400 focus:outline-none focus:bg-teal-50 px-2 pb-0 text-teal-700 bg-transparent min-w-[200px] leading-none m-0 font-note" />
-                  ) : (
-                    <span className="text-teal-700">{ans.en}</span>
-                  )}
-                  <span className="text-gray-800 shrink-0 pr-4">{ans.suffix}</span>
-                </span>
-              </div>
-            </div>
+              );
+            })}
           </div>
         );
       };
@@ -864,7 +912,7 @@
             
             <div className="max-w-2xl w-full mx-auto bg-white rounded-3xl shadow-xl border-4 border-teal-200 overflow-hidden">
               <div className="bg-gradient-to-r from-teal-400 to-emerald-500 p-8 text-center text-white">
-                <h1 className="text-3xl md:text-4xl font-extrabold drop-shadow-md">My Best Memory!<br/><span className="text-xl md:text-2xl opacity-90 mt-2 block">一番の思い出を えいごで言おう</span></h1>
+                <h1 className="text-3xl md:text-4xl font-extrabold drop-shadow-md">About Me!<br/><span className="text-xl md:text-2xl opacity-90 mt-2 block">自分のことを えいごで言ってみよう</span></h1>
               </div>
               <div className="p-6 text-center">
                 
@@ -887,7 +935,9 @@
                 
                 <button onClick={() => { 
                     setInputs([
-                      { type: 'memory', label: '一番の思い出', prefix: 'My best memory is ', suffix: '.', action: '', example: '運動会' }
+                      { type: 'can', label: 'できること', prefix: 'I can ', suffix: '.', action: '', example: '速く走る' },
+                      { type: 'like', label: '好きな事', prefix: 'I like ', suffix: '.', action: '', example: 'math' },
+                      { type: 'cant', label: 'できないこと', prefix: "I can't ", suffix: '.', action: '', example: '上手に歌う' }
                     ]); 
                     setAnswers(null); setTranslatingState({}); setFallbackMode({}); setManualInputs({}); 
                     setCurrentSpeakLine(0);
@@ -939,7 +989,7 @@
 
                   {cookedDishes.length > 0 && (
                     <div className="mt-6 p-4 bg-orange-50 rounded-2xl text-left border-2 border-orange-200 shadow-sm">
-                      <h4 className="font-bold text-orange-800 mb-3 flex items-center"><span className="mr-2 text-xl">🍽️️</span> 作った料理のきろく ({cookedDishes.length} / {DISHES.length})</h4>
+                      <h4 className="font-bold text-orange-800 mb-3 flex items-center"><span className="mr-2 text-xl">🍽️</span> 作った料理のきろく ({cookedDishes.length} / {DISHES.length})</h4>
                       <ul className="text-sm font-bold text-gray-700 list-disc pl-6 space-y-2">
                         {cookedDishes.map((dName, i) => {
                           const dishInfo = DISHES.find(d => d.name === dName) || { name: dName, ruby: "" };
@@ -963,17 +1013,17 @@
             <BackButton />
             <HomeButton />
             <div className="w-full max-w-xl text-center pb-24">
-              <h2 className="text-2xl font-bold text-emerald-700 mb-6 bg-emerald-100 py-2 rounded-full border-2 border-emerald-200 shadow-sm">一番の思い出 を えいごで かこう！</h2>
+              <h2 className="text-2xl font-bold text-emerald-700 mb-6 bg-emerald-100 py-2 rounded-full border-2 border-emerald-200 shadow-sm">じぶんのこと を えいごで かこう！</h2>
               
               {inputs.map((inp, idx) => (
                 <div key={idx} className="bg-white p-4 md:p-6 rounded-2xl mb-6 border-4 border-emerald-100 shadow-md text-left">
                   <h3 className="font-bold text-gray-700 mb-4 text-lg flex items-center border-b-2 border-emerald-50 pb-2">
-                    🌟 {inp.label}
+                    {inp.type === 'can' ? '💪 できること' : inp.type === 'like' ? '❤️ 好きな事' : '💦 できないこと'}
                   </h3>
                   
                   <div className="mb-2">
                     <div className="flex justify-between items-end mb-1">
-                      <p className="font-bold text-sm text-gray-600">あなたの {inp.label} はなに？ <span className="text-gray-400 font-normal">例: {inp.example}</span></p>
+                      <p className="font-bold text-sm text-gray-600">{inp.label}はなに？ <span className="text-gray-400 font-normal">例: {inp.example}</span></p>
                     </div>
                     <input type="text" value={inp.action} onChange={e => {
                         const newInputs = [...inputs];
@@ -988,7 +1038,7 @@
                       }} className="w-full p-4 border-2 border-emerald-200 rounded-xl font-bold text-xl focus:outline-none focus:border-emerald-400 bg-emerald-50 mb-3 transition-colors" placeholder="日本語でかいてね" />
                     
                     <div className="flex flex-wrap gap-2 mb-2">
-                      {Object.keys(MEMORY_DIC).map(opt => (
+                      { (['can', 'cant'].includes(inp.type) ? Object.keys(ACTION_DIC) : Object.keys(SUBJECT_DIC)).map(opt => (
                         <button key={opt} onClick={() => {
                           const newInputs = [...inputs];
                           newInputs[idx].action = opt;
@@ -1094,13 +1144,7 @@
           </div>
         );
       } else if (step === 'SPEAK_PRACTICE') {
-        // QとAの両方を発音練習する
-        const speakLines = answers && answers.length > 0 ? [
-          { text: "What is your best memory?", type: 'Q', jp: 'しつもん' },
-          { text: `${answers[0].prefix}${answers[0].en}${answers[0].suffix}`, type: 'A', jp: `こたえ (${answers[0].action})` }
-        ] : [];
-
-        const isAllDone = currentSpeakLine >= speakLines.length;
+        const isAllDone = currentSpeakLine >= answers.length;
         
         content = (
           <div className="min-h-screen bg-green-50 p-4 flex flex-col items-center py-8 relative">
@@ -1109,16 +1153,14 @@
             <div className="w-full max-w-2xl bg-white p-8 rounded-3xl shadow-xl border-4 border-green-300 text-center mt-8">
               <h2 className="text-3xl font-bold text-green-700 mb-6">🗣️ えいごで はなす れんしゅう</h2>
               <div className="space-y-4 mb-8">
-                {speakLines.map((line, idx) => {
+                {answers.map((ans, idx) => {
                   const isActive = idx === currentSpeakLine;
                   const isDone = idx < currentSpeakLine;
+                  const sentence = `${ans.prefix}${ans.en}${ans.suffix}`;
                   return (
                     <div key={idx} className={`p-4 rounded-xl border-2 text-left flex justify-between items-center transition-all ${isActive ? 'bg-green-100 border-green-400 transform scale-105 shadow-md' : isDone ? 'bg-gray-100 border-gray-200 opacity-50' : 'bg-white border-gray-200 opacity-40'}`}>
-                      <span>
-                        <span className="block text-sm text-green-600 font-bold mb-1">{line.jp}</span>
-                        <span className={`text-xl md:text-2xl font-bold font-note ${isDone ? 'line-through text-gray-500' : 'text-gray-800'}`}>{idx+1}. {line.text}</span>
-                      </span>
-                      {isActive && <button onClick={() => speak(line.text)} className="bg-white p-3 rounded-full text-green-600 shadow border border-green-200">🔊</button>}
+                      <span className={`text-xl md:text-2xl font-bold font-note ${isDone ? 'line-through text-gray-500' : 'text-gray-800'}`}>{idx+1}. {sentence}</span>
+                      {isActive && <button onClick={() => speak(sentence)} className="bg-white p-3 rounded-full text-green-600 shadow border border-green-200">🔊</button>}
                       {isDone && <span className="text-green-500 text-3xl">✓</span>}
                     </div>
                   );
@@ -1128,7 +1170,8 @@
               {!isAllDone ? (
                 <div>
                   <button onClick={() => {
-                     startListening(speakLines[currentSpeakLine].text);
+                     const ans = answers[currentSpeakLine];
+                     startListening(`${ans.prefix}${ans.en}${ans.suffix}`);
                   }} disabled={isListening} className={`w-24 h-24 rounded-full shadow-lg text-4xl mb-4 ${isListening ? 'bg-red-500 animate-pulse' : 'bg-teal-500 hover:bg-teal-600'} text-white transition`}>🎤</button>
                   <p className="font-bold text-gray-600">{isListening ? "はなしてね..." : "マイクをおして はなす"}</p>
                   {feedbackMsg && <div className="mt-4 p-4 rounded-xl font-bold text-lg border-2 bg-white whitespace-pre-line">{feedbackMsg}</div>}
@@ -1171,7 +1214,7 @@
               <div className="space-y-6">
                 {answers.map((ans, idx) => (
                   <div key={idx} className="bg-gray-50 p-4 rounded-xl border-2 border-gray-200 shadow-sm hover:border-teal-300 transition-colors">
-                    <p className="font-bold text-gray-700 mb-2">👤 探す画像: <span className="text-teal-600 text-lg">{ans.action}</span></p>
+                    <p className="font-bold text-gray-700 mb-2">👤 {idx+1}つ目: <span className="text-teal-600 text-lg">{ans.label}</span> ({ans.action})</p>
                     
                     <a href={`https://www.google.com/search?tbm=isch&q=${encodeURIComponent(ans.en)}`} target="_blank" rel="noopener noreferrer" className="inline-block mb-3 bg-blue-100 hover:bg-blue-200 text-blue-700 font-bold py-2 px-4 rounded-lg shadow-sm border border-blue-300 transition-colors">
                       🔍 「{ans.en}」で Google画像けんさく
@@ -1195,7 +1238,7 @@
                     initQuiz(); 
                     goToStep('QUIZ'); 
                   } else {
-                    alert("画像の「画像アドレス」を入れてね！");
+                    alert("すべての画像の「画像アドレス」を入れてね！");
                   }
                 }} 
                 className={`w-full mt-8 text-white text-xl font-bold py-5 rounded-2xl shadow-lg transition transform ${canProceedToQuiz ? 'bg-blue-500 hover:bg-blue-600 hover:-translate-y-1' : 'bg-gray-400 cursor-not-allowed'}`}>
@@ -1213,8 +1256,8 @@
                <HomeButton />
                <div className="bg-white p-8 rounded-3xl shadow-xl text-center border-4 border-orange-300 max-w-md w-full animate-bounce-in">
                  <h2 className="text-3xl font-bold text-orange-600 mb-4">クイズ おわり！</h2>
-                 <p className="text-2xl font-bold text-gray-700 mb-6">{quizList.length}問中 <span className="text-4xl text-red-500">{quizScore}</span>問 正解！</p>
-                 {quizScore === quizList.length && <p className="text-xl text-yellow-600 font-bold mb-6">✨パーフェクト！すごい！✨</p>}
+                 <p className="text-2xl font-bold text-gray-700 mb-6">10問中 <span className="text-4xl text-red-500">{quizScore}</span>問 正解！</p>
+                 {quizScore === 10 && <p className="text-xl text-yellow-600 font-bold mb-6">✨パーフェクト！すごい！✨</p>}
                  <button onClick={() => goToStep('GAME_INTRO')} className="w-full bg-blue-500 hover:bg-blue-600 text-white text-xl font-bold py-4 rounded-xl shadow-lg transition">🎮 ゲームへ すすむ！ ▶️</button>
                </div>
             </div>
@@ -1228,7 +1271,7 @@
               <div className="w-full max-w-2xl bg-white p-6 md:p-8 rounded-3xl shadow-xl border-4 border-orange-300">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-2xl font-bold text-orange-700">英単語クイズ</h2>
-                  <span className="bg-orange-100 text-orange-800 font-bold px-4 py-2 rounded-full shadow-sm">第 {currentQuizIndex + 1} / {quizList.length} 問</span>
+                  <span className="bg-orange-100 text-orange-800 font-bold px-4 py-2 rounded-full shadow-sm">第 {currentQuizIndex + 1} / 10 問</span>
                 </div>
                 
                 <div className="text-center mb-8">
@@ -1276,8 +1319,15 @@
                     })}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center w-full">
                     <p className="font-bold text-gray-600 mb-4">えいごで こたえてね！</p>
+                    <div className="flex flex-wrap justify-center gap-3 mb-6 w-full">
+                      {currentQ.options && currentQ.options.map((opt, i) => (
+                        <div key={i} className="bg-white border-2 border-gray-300 text-gray-700 px-4 py-2 rounded-xl font-bold font-note text-lg md:text-xl shadow-sm text-center">
+                          {opt.en}
+                        </div>
+                      ))}
+                    </div>
                     <button onClick={() => startQuizListening(currentQ.en)} disabled={isListening || quizStatus !== 'question'} className={`w-24 h-24 rounded-full shadow-lg text-4xl mb-4 ${isListening ? 'bg-red-500 animate-pulse' : 'bg-teal-500 hover:bg-teal-600'} text-white transition`}>🎤</button>
                     <p className="font-bold text-gray-600">{isListening ? "はなしてね..." : "マイクをおして はなす"}</p>
                     {feedbackMsg && <div className="mt-4 p-4 rounded-xl font-bold text-lg border-2 bg-white whitespace-pre-line text-center w-full">{feedbackMsg}</div>}
