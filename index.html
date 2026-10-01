@@ -70,7 +70,7 @@
   <script type="text/babel">
     const { useState, useEffect, useCallback, useRef } = React;
 
-    // 学校行事の辞書（クイズの選択肢を確保するため10個に調整しています）
+    // 学校行事の辞書（クイズの選択肢を確保するため10個に調整）
     const MEMORY_DIC = {
       '入学式': 'entrance ceremony',
       '学芸会': 'drama festival',
@@ -104,7 +104,7 @@
       17: { id: 17, name: "熊覇天炎華(シォンバーティエンイェンホワ)", emoji: "💥", reqExp: 40, next: [] },
       18: { id: 18, name: "熊極煉獄(シォンジーリェンユー)", emoji: "🌋", reqExp: 40, next: [] },
       19: { id: 19, name: "熊零度氷月(シォンリンドゥビンユエ)", emoji: "🧊", reqExp: 40, next: [] },
-      20: { id: 20, name: "熊白雪絶影(シォンバイシュエジュエイン)", emoji: "🌨️️", reqExp: 40, next: [] },
+      20: { id: 20, name: "熊白雪絶影(シォンバイシュエジュエイン)", emoji: "🌨", reqExp: 40, next: [] },
       21: { id: 21, name: "熊暴風覇王(シォンバオフォンバーワン)", emoji: "🌀", reqExp: 40, next: [] },
       22: { id: 22, name: "熊神風天狗(シォンシェンフォンティエンゴウ)", emoji: "👺", reqExp: 40, next: [] },
       23: { id: 23, name: "熊大地震神(シォンダーディーヂェンシェン)", emoji: "⛰️", reqExp: 40, next: [] },
@@ -345,7 +345,9 @@
             <canvas ref={canvasRef} width={stateRef.current.width} height={stateRef.current.height} />
           </div>
           
-          <div className="grid grid-cols-3 gap-2 mt-4 md:hidden w-full max-w-[250px]">
+          {}
+          {/* md:hidden を削除して常に表示されるように修正 */}
+          <div className="grid grid-cols-3 gap-2 mt-4 w-full max-w-[250px]">
             <div />
             <button onPointerDown={() => handleBtn('ArrowUp', true)} onPointerUp={() => handleBtn('ArrowUp', false)} onPointerLeave={() => handleBtn('ArrowUp', false)} className="bg-gray-700 text-white p-4 rounded-xl text-2xl active:bg-teal-600 flex items-center justify-center">⬆️</button>
             <div />
@@ -663,14 +665,16 @@
         const selected = shuffled.slice(0, maxQuestions);
         
         const questions = selected.map((q, index) => {
+          // 発音クイズ(voice)のときも選択肢を作るように変更
+          const others = ALL_WORDS.filter(w => w.en !== q.en).sort(() => 0.5 - Math.random()).slice(0, 3);
+          const options = [q, ...others].sort(() => 0.5 - Math.random());
+          
           if (index < Math.floor(maxQuestions / 2)) {
             // 選択肢クイズ
-            const others = ALL_WORDS.filter(w => w.en !== q.en).sort(() => 0.5 - Math.random()).slice(0, 3);
-            const options = [q, ...others].sort(() => 0.5 - Math.random());
             return { ...q, type: 'choice', options };
           } else {
             // 発音クイズ
-            return { ...q, type: 'voice' };
+            return { ...q, type: 'voice', options };
           }
         });
         setQuizList(questions);
@@ -939,7 +943,7 @@
 
                   {cookedDishes.length > 0 && (
                     <div className="mt-6 p-4 bg-orange-50 rounded-2xl text-left border-2 border-orange-200 shadow-sm">
-                      <h4 className="font-bold text-orange-800 mb-3 flex items-center"><span className="mr-2 text-xl">🍽️️</span> 作った料理のきろく ({cookedDishes.length} / {DISHES.length})</h4>
+                      <h4 className="font-bold text-orange-800 mb-3 flex items-center"><span className="mr-2 text-xl">🍽</span> 作った料理のきろく ({cookedDishes.length} / {DISHES.length})</h4>
                       <ul className="text-sm font-bold text-gray-700 list-disc pl-6 space-y-2">
                         {cookedDishes.map((dName, i) => {
                           const dishInfo = DISHES.find(d => d.name === dName) || { name: dName, ruby: "" };
@@ -1276,8 +1280,20 @@
                     })}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col items-center w-full">
                     <p className="font-bold text-gray-600 mb-4">えいごで こたえてね！</p>
+                    
+                    {/* 音声入力クイズのときも4つの選択肢を表示する */}
+                    {currentQ.options && (
+                      <div className="grid grid-cols-2 gap-3 mb-6 w-full max-w-md">
+                        {currentQ.options.map((opt, i) => (
+                          <div key={i} className="bg-gray-50 border-2 border-gray-200 text-gray-700 p-3 rounded-xl text-center font-bold font-note text-lg shadow-sm">
+                            {opt.en}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
                     <button onClick={() => startQuizListening(currentQ.en)} disabled={isListening || quizStatus !== 'question'} className={`w-24 h-24 rounded-full shadow-lg text-4xl mb-4 ${isListening ? 'bg-red-500 animate-pulse' : 'bg-teal-500 hover:bg-teal-600'} text-white transition`}>🎤</button>
                     <p className="font-bold text-gray-600">{isListening ? "はなしてね..." : "マイクをおして はなす"}</p>
                     {feedbackMsg && <div className="mt-4 p-4 rounded-xl font-bold text-lg border-2 bg-white whitespace-pre-line text-center w-full">{feedbackMsg}</div>}
